@@ -1,0 +1,165 @@
+---
+- hosts: localhost
+  tasks:
+  - name: create directory for ssh keypair
+    file:
+      path: "{{ lookup('env','HOME') }}/.ssh/"
+      state: directory
+      mode: 0700
+  - name: create ssh privatekey
+    openssh_keypair:
+      path: "{{ lookup('env','HOME') }}/.ssh/id_rsa"
+
+- hosts: all
+  tasks:
+  - name: publickey copy to target-nodes
+    authorized_key:
+      user: "{{ ansible_env.USER }}"
+      key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub' )}}"
+
+- hosts: master
+  gather_facts: false
+  become: true
+  tasks:
+    - firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - 6443/tcp
+        - 2379-2380/tcp
+        - 10250/tcp
+        - 10251/tcp
+        - 10252/tcp
+        - 8285/udp  # flannel
+        - 8472/udp  # flannel
+      when: enable_firewalld is defined and enable_firewalld|bool
+
+- hosts: worker
+  gather_facts: false
+  become: true
+  tasks:
+    - firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - 10250/tcp
+        - 30000-32767/tcp
+        - 8285/udp  # flannel
+        - 8472/udp  # flannel
+      when: enable_firewalld is defined and enable_firewalld|bool
+
+- hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+
+    - name: cni0 set to trusted zone
+      firewalld:
+        zone: trusted
+        interface: cni0
+        permanent: yes
+        immediate: yes
+        state: enabled
+      when: enable_firewalld is defined and enable_firewalld|bool
+
+    - name: disable firewalld
+      systemd:
+        state: stopped
+        enabled: no
+        name: firewalld
+      when: not (enable_firewalld is defined and enable_firewalld|bool)
+
+    - name: confiture sysctl
+      sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        state: present
+        sysctl_set: no
+        reload: no
+        sysctl_file: /etc/sysctl.d/k8s.conf
+      loop:
+        - key: net.bridge.bridge-nf-call-iptables
+          value: '1'
+        - key: net.bridge.bridge-nf-call-ip6tables
+          value: '1'
+    - name: ensure sysctl configure
+      shell: sysctl --system
+
+    - name: install base packages
+      yum:
+        name:
+          - bash-completion
+          - open-vm-tools
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+          - iptables
+        state: latest
+
+    - name: setup docker yum repository
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: install docker
+      yum:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: latest
+
+    - name: create docker configure directory
+      file:
+        path: /etc/docker/
+        state: directory
+        mode: 0775
+
+    - name: overlay2 configure to docker
+      copy:
+        content: |
+          {
+            "storage-driver": "overlay2"
+          }
+        dest: /etc/docker/daemon.json 
+        mode: 0644
+    - name: start and enable docker
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+        name: docker
+
+    # kubeadm
+    - name: kubeadm, kubelet, kubectl
+      yum_repository:
+        name: kubernetes
+        file: kubernetes
+        description: Kubernetes
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        enabled: yes
+        gpgcheck: yes
+        repo_gpgcheck: yes
+        gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+    - name: SELinux set permissive
+      selinux:
+        policy: targeted
+        state: permissive
+
+    - name: install kubelet/kubeadm/kubectl
+      yum:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: latest
+
+    - name: start and enable kubelet
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+        name: kubelet
