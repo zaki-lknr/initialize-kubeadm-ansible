@@ -10,6 +10,15 @@ CentOS7で`kubeadm init`を実行するために必要なmaster/workerノード�
 
 # usage
 
+playbookは以下の通り
+
+|playbook                      |機能|
+|------------------------------|-------------------|
+|playbooks/playbook.yaml       |全て実行|
+|playbooks/ssh_keys.yaml       |ssh鍵作成・公開鍵配布|
+|playbooks/preparing_hosts.yaml|ホストの事前設定・kubeadm/kubectl/kubeletのインストール|
+
+
 OSインストール後にこのplaybookを実行し、その後に
 
 - `kubeadm init ...`を実行
