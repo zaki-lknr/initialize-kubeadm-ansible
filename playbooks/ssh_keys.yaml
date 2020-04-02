@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  tasks:
+  - name: create directory for ssh keypair
+    file:
+      path: "{{ lookup('env','HOME') }}/.ssh/"
+      state: directory
+      mode: 0700
+  - name: create ssh privatekey
+    openssh_keypair:
+      path: "{{ lookup('env','HOME') }}/.ssh/id_rsa"
+
+- hosts: all
+  tasks:
+  - name: publickey copy to target-nodes
+    authorized_key:
+      user: "{{ ansible_env.USER }}"
+      key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub' )}}"
