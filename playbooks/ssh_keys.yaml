@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: localhost, master[0]
   tasks:
   - name: create directory for ssh keypair
     file:
@@ -16,3 +16,17 @@
     authorized_key:
       user: "{{ ansible_env.USER }}"
       key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub' )}}"
+
+- hosts: master[0]
+  tasks:
+  - name: fetch master0 pubkey
+    fetch:
+      src: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
+      dest: /var/tmp/pubkey
+      flat: yes
+- hosts: all, !master[0]
+  tasks:
+  - name: master0 pubkey copy to all-nodes
+    authorized_key:
+      user: "{{ ansible_env.USER }}"
+      key: "{{ lookup('file', '/var/tmp/pubkey' )}}"
