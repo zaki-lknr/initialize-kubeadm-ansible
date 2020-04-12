@@ -38,6 +38,14 @@
   gather_facts: false
   become: true
   tasks:
+    - name: get swap state
+      shell: swapon -v
+      register: swap_state
+      changed_when: false
+
+    - name: swap off
+      shell: swapoff -a
+      when: swap_state.stdout != ''
 
     - name: cni0 set to trusted zone
       firewalld:
