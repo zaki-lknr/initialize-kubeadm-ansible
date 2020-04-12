@@ -47,6 +47,20 @@
       shell: swapoff -a
       when: swap_state.stdout != ''
 
+    - name: swap check (/etc/fstab)
+      shell: grep -v "\s*#" /etc/fstab | awk '{print $2}' | grep swap -c
+      register: swap_state_in_fstab
+      check_mode: false
+      changed_when: false
+      ignore_errors: true
+
+    - name: disable swap (/etc/fstab)
+      replace:
+        path: /etc/fstab
+        regexp: ([^\s]+\s+swap\s+.*)
+        replace: '# \1'
+      when: swap_state_in_fstab.stdout != '0'
+
     - name: cni0 set to trusted zone
       firewalld:
         zone: trusted
