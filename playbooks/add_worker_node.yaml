@@ -20,8 +20,15 @@
       changed_when: false
       register: kube_token
 
+    - name: get ca cert
+      shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+      check_mode: false
+      changed_when: false
+      register: token_ca_cert
+
     - set_fact:
         kubeadm_token: "{{kube_token.stdout}}"
+        kubeadm_ca_cert: "{{token_ca_cert.stdout}}"
       delegate_to: localhost   # set_factの実行ホストをlocalhostに移譲
       delegate_facts: true     # delegate_toで実行ホストを変更したfact更新を許可
 
@@ -31,5 +38,5 @@
 
     - name: test
       debug:
-        msg: "{{kubeadm_token}}"
+        msg: "{{kubeadm_token}} {{kubeadm_ca_cert}}"
 
