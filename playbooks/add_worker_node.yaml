@@ -11,12 +11,17 @@
       register: token_exists
 
     - name: create token
-      shell: kubeadm token create --print-join-command
+      shell: kubeadm token create
       when: token_exists.stdout == ''
-      register: create_token_result
+
+    - name: get token
+      shell: kubeadm token list -o jsonpath='{.token}'
+      check_mode: false
+      changed_when: false
+      register: kube_token
 
     - set_fact:
-        kubeadm_token: "{{create_token_result.stdout}}"
+        kubeadm_token: "{{kube_token.stdout}}"
       delegate_to: localhost   # set_factの実行ホストをlocalhostに移譲
       delegate_facts: true     # delegate_toで実行ホストを変更したfact更新を許可
 
