@@ -15,5 +15,16 @@
       when: token_exists.stdout == ''
       register: create_token_result
 
-    - debug:
-        msg: "{{create_token_result}}"
+    - set_fact:
+        kubeadm_token: "{{create_token_result.stdout}}"
+      delegate_to: localhost   # set_factの実行ホストをlocalhostに移譲
+      delegate_facts: true     # delegate_toで実行ホストを変更したfact更新を許可
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: test
+      debug:
+        msg: "{{kubeadm_token}}"
+
