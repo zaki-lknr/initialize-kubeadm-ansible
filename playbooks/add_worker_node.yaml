@@ -1,0 +1,50 @@
+---
+- hosts: master[0]
+  gather_facts: false
+  become: true
+  tasks:
+
+    - name: check exists token
+      shell: kubeadm token list
+      check_mode: false
+      changed_when: false
+      register: token_exists
+
+    - name: create token
+      shell: kubeadm token create
+      when: token_exists.stdout == ''
+
+    - name: get token
+      shell: kubeadm token list -o jsonpath='{.token}'
+      check_mode: false
+      changed_when: false
+      register: kube_token
+
+    - name: get ca cert
+      shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+      check_mode: false
+      changed_when: false
+      register: token_ca_cert
+
+    - set_fact:
+        kubeadm_token: "{{kube_token.stdout}}"
+        kubeadm_ca_cert: "{{token_ca_cert.stdout}}"
+      delegate_to: "{{item}}"   # set_factの実行ホストをlocalhostに移譲
+      delegate_facts: true     # delegate_toで実行ホストを変更したfact更新を許可
+      loop: "{{groups.worker}}"
+
+- hosts: worker
+  gather_facts: false
+  become: true
+  vars:
+    master_node: "{{hostvars[groups.master[0]].ansible_host}}"
+  tasks:
+
+    - name: add worker nodes
+      shell: "kubeadm join {{master_node}}:6443 --token {{kubeadm_token}} --discovery-token-ca-cert-hash sha256:{{kubeadm_ca_cert}}"
+
+    # - name: test
+    #   debug:
+    #     msg: "{{kubeadm_token}} {{kubeadm_ca_cert}}"
+
+    # TODO: ノードがReadyになるのを待つ
