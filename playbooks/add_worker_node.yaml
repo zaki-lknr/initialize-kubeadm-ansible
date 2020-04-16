@@ -26,25 +26,19 @@
       changed_when: false
       register: token_ca_cert
 
-    - set_fact:
-        kubeadm_token: "{{kube_token.stdout}}"
-        kubeadm_ca_cert: "{{token_ca_cert.stdout}}"
-      delegate_to: "{{item}}"   # set_factの実行ホストをlocalhostに移譲
-      delegate_facts: true     # delegate_toで実行ホストを変更したfact更新を許可
-      loop: "{{groups.worker}}"
-
 - hosts: worker
   gather_facts: false
   become: true
   vars:
     master_node: "{{hostvars[groups.master[0]].ansible_host}}"
+    token: "{{hostvars[groups.master[0]].kube_token.stdout}}"
+    ca_cert: "{{hostvars[groups.master[0]].token_ca_cert.stdout}}"
   tasks:
-
     - name: add worker nodes
-      shell: "kubeadm join {{master_node}}:6443 --token {{kubeadm_token}} --discovery-token-ca-cert-hash sha256:{{kubeadm_ca_cert}}"
+      shell: "kubeadm join {{master_node}}:6443 --token {{token}} --discovery-token-ca-cert-hash sha256:{{ca_cert}}"
 
     # - name: test
     #   debug:
-    #     msg: "{{kubeadm_token}} {{kubeadm_ca_cert}}"
+    #     msg: "{{token}} {{ca_cert}}"
 
     # TODO: ノードがReadyになるのを待つ
