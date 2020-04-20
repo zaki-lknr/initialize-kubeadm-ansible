@@ -4,20 +4,8 @@
   become: true
   tasks:
 
-    - name: check exists token
-      shell: kubeadm token list
-      check_mode: false
-      changed_when: false
-      register: token_exists
-
     - name: create token
       shell: kubeadm token create
-      when: token_exists.stdout == ''
-
-    - name: get token
-      shell: kubeadm token list -o jsonpath='{.token}'
-      check_mode: false
-      changed_when: false
       register: kube_token
 
     - name: get ca cert
@@ -56,3 +44,6 @@
       delay: 10
       #changed_when: false
       loop: "{{groups.worker}}"
+
+    - name: delete token
+      shell: kubeadm token delete "{{kube_token.stdout}}"
