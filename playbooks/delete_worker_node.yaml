@@ -1,0 +1,31 @@
+---
+- hosts: master[0]
+  gather_facts: false
+  become: false
+  tasks:
+    - name: get node name
+      vars:
+        host_address: "{{hostvars[item].ansible_host}}"
+      shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].metadata.name}'
+      register: nodes_name
+      changed_when: false
+      loop: "{{groups.worker}}"
+
+    # - name: print
+    #   debug:
+    #     msg: "{{item.stdout}}"
+    #     # msg: "{{item}}"
+    #   loop: "{{nodes_name.results}}"
+
+    - name: delete nodes
+      vars:
+        target_node: "{{item.stdout}}"
+      shell: kubectl delete node "{{target_node}}"
+      loop: "{{nodes_name.results}}"
+
+- hosts: worker
+  gather_facts: false
+  become: true
+  tasks:
+    - name: reset nodes
+      shell: kubeadm reset --force
