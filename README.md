@@ -22,11 +22,5 @@ playbookは以下の通り
 | playbooks/deploy_cni.yaml           | CNIのインストール(現在はFlannel限定)                |
 | playbooks/add_worker_node.yaml      | workerノードの追加(`kubeadm join`)            |
 
-OSインストール後にこのplaybookを実行し、その後に
-
-- `kubeadm init ...`を実行
-- cluster設定(`~/.kube/config`の作成)
-- pod networkの設定(`kubectl apply -f kube-flannel.yml`)
-- workerの追加(`kubeadm join ...`)
-
-を実行する。
+OSインストール後にこの`playbooks/playbook.yaml`を実行すればk8sクラスタがデプロイされる。
+(masterの追加はこれから)
