@@ -4,3 +4,17 @@
 
 - name: preparing_hosts
   import_playbook: preparing_hosts.yaml
+
+- name: kubeadm init
+  import_playbook: exec_kubeadm_init.yaml
+
+- name: configure kubeconfig
+  import_playbook: configure_kubeconfig.yaml
+
+- name: install CNI
+  import_playbook: deploy_cni.yaml
+
+# todo: add master nodes
+
+- name: add worker nodes
+  import_playbook: add_worker_node.yaml
