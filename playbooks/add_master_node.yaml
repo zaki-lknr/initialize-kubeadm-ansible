@@ -37,6 +37,18 @@
   gather_facts: false
   become: false
   tasks:
+    - name: wait for Node-Ready
+      vars:
+        host_address: "{{hostvars[item].ansible_host}}"
+      shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].status.conditions[-1].status}'
+      # nodeのstatusは、"Ready"と記録されている.typeではない
+      register: node_state
+      until: node_state.stdout == "True"
+      retries: 60
+      delay: 10
+      #changed_when: false
+      loop: "{{groups.master | difference(groups.master[0])}}"
+
     - name: delete token
       shell: "kubeadm token delete {{kube_token.stdout}}"
       # TODO: cert-keyに紐づいてるtokenの削除は、idが分からないので削除していない
