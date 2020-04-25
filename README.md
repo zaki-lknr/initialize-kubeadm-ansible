@@ -20,7 +20,11 @@ playbookは以下の通り
 | playbooks/exec_kubeadm_init.yaml    | `kubeadm init`をmasterノード上で実行            |
 | playbooks/configure_kubeconfig.yaml | 一般ユーザの`.kube/config`の設定                 |
 | playbooks/deploy_cni.yaml           | CNIのインストール(現在はFlannel限定)                |
+| playbooks/add_master_node.yaml      | masterノードの追加(`kubeadm join`)            |
 | playbooks/add_worker_node.yaml      | workerノードの追加(`kubeadm join`)            |
 
 OSインストール後にこの`playbooks/playbook.yaml`を実行すればk8sクラスタがデプロイされる。
-(masterの追加はこれから)
+
+```
+$ ansible-playbook -i inventory.ini playbooks/playbook.yaml -kK
+```
