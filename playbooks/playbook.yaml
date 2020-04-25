@@ -14,7 +14,8 @@
 - name: install CNI
   import_playbook: deploy_cni.yaml
 
-# todo: add master nodes
+- name: add master nodes
+  import_playbook: add_master_node.yaml
 
 - name: add worker nodes
   import_playbook: add_worker_node.yaml
