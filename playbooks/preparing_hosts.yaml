@@ -8,14 +8,7 @@
         permanent: yes
         immediate: yes
         state: enabled
-      loop:
-        - 6443/tcp
-        - 2379-2380/tcp
-        - 10250/tcp
-        - 10251/tcp
-        - 10252/tcp
-        - 8285/udp  # flannel
-        - 8472/udp  # flannel
+      loop: "{{ required_ports }}"
       when: enable_firewalld is defined and enable_firewalld|bool
 
 - hosts: worker
@@ -27,11 +20,7 @@
         permanent: yes
         immediate: yes
         state: enabled
-      loop:
-        - 10250/tcp
-        - 30000-32767/tcp
-        - 8285/udp  # flannel
-        - 8472/udp  # flannel
+      loop: "{{ required_ports }}"
       when: enable_firewalld is defined and enable_firewalld|bool
 
 - hosts: all
