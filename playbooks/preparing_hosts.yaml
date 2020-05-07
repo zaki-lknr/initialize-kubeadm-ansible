@@ -106,7 +106,13 @@
         state: latest
 
     - name: setup docker yum repository
-      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+        mode: '0644'
+      # 手順としては yum-config-manager --add-repo を実行することになっている。
+      # コマンドの処理内容はwgetなのでget_urlで代替
+      # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#tab-cri-docker-installation-1
 
     - name: install docker
       yum:
