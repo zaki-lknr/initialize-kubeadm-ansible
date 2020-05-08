@@ -1,0 +1,5 @@
+---
+cni_required_ports:
+  - 8285/udp  # flannel
+  - 8472/udp  # flannel
+# CNIというかflannel特有の値なので、group_varsよりroleに入れたい感はある

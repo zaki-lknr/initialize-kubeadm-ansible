@@ -8,7 +8,7 @@
         permanent: yes
         immediate: yes
         state: enabled
-      loop: "{{ required_ports }}"
+      loop: "{{ required_ports + (cni_required_ports | default([])) }}"
       when: enable_firewalld is defined and enable_firewalld|bool
 
 - hosts: worker
@@ -20,7 +20,7 @@
         permanent: yes
         immediate: yes
         state: enabled
-      loop: "{{ required_ports }}"
+      loop: "{{ required_ports + (cni_required_ports | default([]))}}"
       when: enable_firewalld is defined and enable_firewalld|bool
 
 - hosts: all
