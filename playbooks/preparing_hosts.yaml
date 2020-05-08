@@ -88,10 +88,10 @@
         name:
           - bash-completion
           - open-vm-tools
-          - yum-utils
-          - device-mapper-persistent-data
-          - lvm2
-          - iptables
+          # - yum-utils
+          # - device-mapper-persistent-data
+          # - lvm2
+          # - iptables
         state: latest
 
     - name: setup docker yum repository
@@ -99,10 +99,7 @@
 
     - name: install docker
       yum:
-        name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
+        name: "{{ cri_required_packages }}"
         state: latest
 
     - name: create docker configure directory
