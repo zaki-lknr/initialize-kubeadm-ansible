@@ -75,11 +75,7 @@
         sysctl_set: no
         reload: no
         sysctl_file: /etc/sysctl.d/k8s.conf
-      loop:
-        - key: net.bridge.bridge-nf-call-iptables
-          value: 1
-        - key: net.bridge.bridge-nf-call-ip6tables
-          value: 1
+      loop: "{{ require_kernel_param }}"
     - name: ensure sysctl configure
       shell: sysctl --system
 

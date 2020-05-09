@@ -23,3 +23,9 @@ k8s_required_packages:
 additional_packages:
   - bash-completion
   - open-vm-tools
+
+require_kernel_param:
+  - key: net.bridge.bridge-nf-call-iptables
+    value: 1
+  - key: net.bridge.bridge-nf-call-ip6tables
+    value: 1
