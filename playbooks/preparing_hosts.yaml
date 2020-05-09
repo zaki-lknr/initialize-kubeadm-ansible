@@ -83,16 +83,11 @@
     - name: ensure sysctl configure
       shell: sysctl --system
 
-    - name: install base packages
+    - name: install additional packages
       yum:
-        name:
-          - bash-completion
-          - open-vm-tools
-          # - yum-utils
-          # - device-mapper-persistent-data
-          # - lvm2
-          # - iptables
+        name: "{{ additional_packages }}"
         state: latest
+      # todo: 処理位置は別途考える
 
     - name: setup docker yum repository
       shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
