@@ -13,6 +13,12 @@ cri_required_packages:
   - docker-ce-19.03.8
   - docker-ce-cli-19.03.8
 
+# kubernetes関連パッケージ
+k8s_required_packages:
+  - kubelet
+  - kubeadm
+  - kubectl
+
 # その他インストールしたいパッケージ
 additional_packages:
   - bash-completion

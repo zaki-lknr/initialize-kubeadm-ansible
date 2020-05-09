@@ -137,10 +137,7 @@
 
     - name: install kubelet/kubeadm/kubectl
       yum:
-        name:
-          - kubelet
-          - kubeadm
-          - kubectl
+        name: "{{ k8s_required_packages }}"
         state: latest
 
     - name: start and enable kubelet
