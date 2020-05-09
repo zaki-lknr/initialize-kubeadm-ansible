@@ -77,9 +77,9 @@
         sysctl_file: /etc/sysctl.d/k8s.conf
       loop:
         - key: net.bridge.bridge-nf-call-iptables
-          value: '1'
+          value: 1
         - key: net.bridge.bridge-nf-call-ip6tables
-          value: '1'
+          value: 1
     - name: ensure sysctl configure
       shell: sysctl --system
 
