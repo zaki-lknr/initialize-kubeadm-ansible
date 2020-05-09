@@ -1,20 +1,6 @@
 ---
 - hosts: master[0]
   gather_facts: false
-  tasks:
-    - name: install flannel
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
-
-      # todo: applyの処理がunchangedの場合も、ansibleではchanged扱いになっている
-
-    - name: wait for Node-Ready
-      shell: kubectl get node --no-headers | awk '{print $2}'
-      register: node_state
-      until: node_state.stdout == "Ready"
-      retries: 10
-      delay: 5
-      changed_when: false
-      # 待つだけなので強制no changed
-
-    # - debug:
-    #     msg: "{{node_state}}"
+  roles:
+  - cni/flannel
+  - cni/wait
