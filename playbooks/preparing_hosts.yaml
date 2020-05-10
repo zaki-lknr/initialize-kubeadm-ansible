@@ -1,28 +1,4 @@
 ---
-- hosts: master
-  gather_facts: false
-  become: true
-  tasks:
-    - firewalld:
-        port: "{{ item }}"
-        permanent: yes
-        immediate: yes
-        state: enabled
-      loop: "{{ required_ports + (cni_required_ports | default([])) }}"
-      when: enable_firewalld is defined and enable_firewalld|bool
-
-- hosts: worker
-  gather_facts: false
-  become: true
-  tasks:
-    - firewalld:
-        port: "{{ item }}"
-        permanent: yes
-        immediate: yes
-        state: enabled
-      loop: "{{ required_ports + (cni_required_ports | default([]))}}"
-      when: enable_firewalld is defined and enable_firewalld|bool
-
 - hosts: all
   gather_facts: false
   become: true
@@ -50,6 +26,15 @@
         regexp: ([^\s]+\s+swap\s+.*)
         replace: '# \1'
       when: swap_state_in_fstab.stdout != '0'
+
+    - name: allow required ports
+      firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop: "{{ required_ports + (cni_required_ports | default([]))}}"
+      when: enable_firewalld is defined and enable_firewalld|bool
 
     - name: cni0 set to trusted zone
       firewalld:
