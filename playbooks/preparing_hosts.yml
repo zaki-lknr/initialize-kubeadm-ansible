@@ -11,17 +11,9 @@
       import_role:
         name: configure_firewalld
 
-    - name: confiture sysctl
-      sysctl:
-        name: "{{ item.key }}"
-        value: "{{ item.value }}"
-        state: present
-        sysctl_set: no
-        reload: no
-        sysctl_file: /etc/sysctl.d/k8s.conf
-      loop: "{{ require_kernel_param }}"
-    - name: ensure sysctl configure
-      shell: sysctl --system
+    - name: Letting iptables see bridged traffic
+      import_role:
+        name: set_bridged_traffic
 
     - name: install additional packages
       yum:
