@@ -7,30 +7,9 @@
       import_role:
         name: swap_off
 
-    - name: allow required ports
-      firewalld:
-        port: "{{ item }}"
-        permanent: yes
-        immediate: yes
-        state: enabled
-      loop: "{{ required_ports + (cni_required_ports | default([]))}}"
-      when: enable_firewalld is defined and enable_firewalld|bool
-
-    - name: cni0 set to trusted zone
-      firewalld:
-        zone: trusted
-        interface: cni0
-        permanent: yes
-        immediate: yes
-        state: enabled
-      when: enable_firewalld is defined and enable_firewalld|bool
-
-    - name: disable firewalld
-      systemd:
-        state: stopped
-        enabled: no
-        name: firewalld
-      when: not (enable_firewalld is defined and enable_firewalld|bool)
+    - name: configure firewalld
+      import_role:
+        name: configure_firewalld
 
     - name: confiture sysctl
       sysctl:
