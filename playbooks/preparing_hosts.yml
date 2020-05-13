@@ -21,40 +21,9 @@
         state: latest
       # todo: 処理位置は別途考える
 
-    - name: setup docker yum repository
-      get_url:
-        url: https://download.docker.com/linux/centos/docker-ce.repo
-        dest: /etc/yum.repos.d/docker-ce.repo
-        mode: '0644'
-      # 手順としては yum-config-manager --add-repo を実行することになっている。
-      # コマンドの処理内容はwgetなのでget_urlで代替
-      # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#tab-cri-docker-installation-1
-
-    - name: install docker
-      yum:
-        name: "{{ cri_required_packages }}"
-        state: latest
-
-    - name: create docker configure directory
-      file:
-        path: /etc/docker/
-        state: directory
-        mode: 0775
-
-    - name: overlay2 configure to docker
-      copy:
-        content: |
-          {
-            "storage-driver": "overlay2"
-          }
-        dest: /etc/docker/daemon.json 
-        mode: 0644
-    - name: start and enable docker
-      systemd:
-        state: restarted
-        daemon_reload: yes
-        enabled: yes
-        name: docker
+    - name: install container runtime
+      import_role:
+        name: install_container_runtime
 
     # kubeadm
     - name: kubeadm, kubelet, kubectl
