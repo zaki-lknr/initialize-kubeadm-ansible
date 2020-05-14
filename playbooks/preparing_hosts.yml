@@ -25,31 +25,6 @@
       import_role:
         name: install_container_runtime
 
-    # kubeadm
-    - name: kubeadm, kubelet, kubectl
-      yum_repository:
-        name: kubernetes
-        file: kubernetes
-        description: Kubernetes
-        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-        enabled: yes
-        gpgcheck: yes
-        repo_gpgcheck: yes
-        gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-
-    - name: SELinux set permissive
-      selinux:
-        policy: targeted
-        state: permissive
-
-    - name: install kubelet/kubeadm/kubectl
-      yum:
-        name: "{{ k8s_required_packages }}"
-        state: latest
-
-    - name: start and enable kubelet
-      systemd:
-        state: restarted
-        daemon_reload: yes
-        enabled: yes
-        name: kubelet
+    - name: install kube tools
+      import_role:
+        name: install_kube_tools
