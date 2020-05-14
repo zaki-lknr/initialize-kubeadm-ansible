@@ -4,15 +4,6 @@ cni_required_ports:
   - 8472/udp  # flannel
 # CNIというかflannel特有の値なので、group_varsよりroleに入れたい感はある
 
-# コンテナランタイム
-cri_required_packages:
-  - yum-utils
-  - device-mapper-persistent-data
-  - lvm2
-  - containerd.io-1.2.13
-  - docker-ce-19.03.8
-  - docker-ce-cli-19.03.8
-
 # kubernetes関連パッケージ
 k8s_required_packages:
   - kubelet
