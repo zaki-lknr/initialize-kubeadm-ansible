@@ -4,12 +4,6 @@ cni_required_ports:
   - 8472/udp  # flannel
 # CNIというかflannel特有の値なので、group_varsよりroleに入れたい感はある
 
-# kubernetes関連パッケージ
-k8s_required_packages:
-  - kubelet
-  - kubeadm
-  - kubectl
-
 # その他インストールしたいパッケージ
 additional_packages:
   - bash-completion

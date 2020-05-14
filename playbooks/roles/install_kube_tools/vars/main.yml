@@ -1,0 +1,6 @@
+---
+# kubernetes関連パッケージ
+k8s_required_packages:
+  - kubelet
+  - kubeadm
+  - kubectl
