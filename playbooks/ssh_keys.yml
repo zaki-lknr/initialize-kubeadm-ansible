@@ -1,14 +1,7 @@
 ---
 - hosts: localhost, master[0]
-  tasks:
-  - name: create directory for ssh keypair
-    file:
-      path: "{{ lookup('env','HOME') }}/.ssh/"
-      state: directory
-      mode: 0700
-  - name: create ssh privatekey
-    openssh_keypair:
-      path: "{{ lookup('env','HOME') }}/.ssh/id_rsa"
+  roles:
+  - configure_ssh/create_key_pair
 
 - hosts: all
   tasks:
