@@ -49,5 +49,8 @@
       #changed_when: false
       loop: "{{groups.worker}}"
 
+    # - name: delete token
+    #   shell: kubeadm token delete "{{kube_token.stdout}}"
     - name: delete token
-      shell: kubeadm token delete "{{kube_token.stdout}}"
+      import_role:
+        name: configure_nodes/delete_token

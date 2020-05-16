@@ -1,0 +1,4 @@
+---
+# create_token roleでnodeを追加するために作成したtokenの削除を行う
+- name: delete token
+  shell: kubeadm token delete "{{kube_token.stdout}}"
