@@ -4,11 +4,8 @@
   - configure_ssh/create_key_pair
 
 - hosts: all
-  tasks:
-  - name: publickey copy to target-nodes
-    authorized_key:
-      user: "{{ ansible_env.USER }}"
-      key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub' )}}"
+  roles:
+  - configure_ssh/add_authorized_key
 
 - hosts: master[0]
   tasks:
