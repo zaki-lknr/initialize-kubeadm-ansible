@@ -4,4 +4,7 @@
   become: true
   tasks:
   - name: execute kubeadm init
-    shell: kubeadm init --pod-network-cidr="{{pod_network_cidr}}" --control-plane-endpoint="{{controlplain_endpoint}}" --upload-certs
+    #shell: kubeadm init --pod-network-cidr="{{pod_network_cidr}}" --control-plane-endpoint="{{controlplain_endpoint}}" --upload-certs
+    import_role:
+      name: configure_nodes/init_master
+

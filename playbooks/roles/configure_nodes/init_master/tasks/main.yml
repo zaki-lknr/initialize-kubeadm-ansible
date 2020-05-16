@@ -1,0 +1,20 @@
+---
+- name: execute kubeadm init
+  shell: kubeadm init --pod-network-cidr="{{pod_network_cidr}}" --control-plane-endpoint="{{controlplain_endpoint}}" --upload-certs
+
+- name: create $HOME/.kube directory
+  file:
+    path: "{{ lookup('env','HOME') }}/.kube/"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_env.SUDO_USER }}"
+    group: "{{ ansible_env.SUDO_USER }}"
+
+- name: copy admin.conf to $HOME/.kube/config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ lookup('env','HOME') }}/.kube/config"
+    owner: "{{ ansible_env.SUDO_USER }}"
+    group: "{{ ansible_env.SUDO_USER }}"
+    mode: '0600'
+    remote_src: true

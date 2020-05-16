@@ -8,8 +8,8 @@
 - name: kubeadm init
   import_playbook: exec_kubeadm_init.yml
 
-- name: configure kubeconfig
-  import_playbook: configure_kubeconfig.yml
+# - name: configure kubeconfig
+#   import_playbook: configure_kubeconfig.yml
 
 - name: install CNI
   import_playbook: deploy_cni.yml
