@@ -3,17 +3,15 @@
   roles:
   - configure_ssh/create_key_pair
 
-- hosts: all
-  roles:
-  - configure_ssh/add_authorized_key
-
 - hosts: master[0]
   roles:
   - configure_ssh/get_node_pubkey
+    # 鍵ファイルのコピー先はハードコーディングしてある
 
-- hosts: all, !master[0]
-  tasks:
-  - name: master0 pubkey copy to all-nodes
-    authorized_key:
-      user: "{{ ansible_env.USER }}"
-      key: "{{ lookup('file', '/var/tmp/pubkey' )}}"
+- hosts: all #, !master[0]
+  vars:
+    public_keys:
+    - "{{ lookup('env', 'HOME') + '/.ssh/id_rsa.pub' }}"
+    - "/var/tmp/pubkey"
+  roles:
+  - configure_ssh/add_authorized_key
