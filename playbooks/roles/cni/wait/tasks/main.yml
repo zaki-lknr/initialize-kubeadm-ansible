@@ -3,7 +3,7 @@
   shell: kubectl get node --no-headers | awk '{print $2}'
   register: node_state
   until: node_state.stdout == "Ready"
-  retries: 10
+  retries: 60
   delay: 5
   changed_when: false
   # 待つだけなので強制no changed
