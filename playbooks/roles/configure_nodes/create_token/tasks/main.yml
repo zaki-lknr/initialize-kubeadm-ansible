@@ -1,0 +1,11 @@
+---
+# nodeを追加するために必要なtokenの作成を行う
+- name: create token
+  shell: kubeadm token create
+  register: kube_token
+
+- name: get ca cert
+  shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  check_mode: false
+  changed_when: false
+  register: token_ca_cert
