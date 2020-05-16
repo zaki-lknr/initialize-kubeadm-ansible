@@ -1,0 +1,5 @@
+---
+# masterノードの追加に必要なキー作成
+- name: create certs key
+  shell: kubeadm init phase upload-certs --upload-certs
+  register: cert_key
