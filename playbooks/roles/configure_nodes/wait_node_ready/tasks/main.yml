@@ -9,4 +9,4 @@
   retries: 60
   delay: 10
   #changed_when: false
-  loop: "{{groups.worker}}"
+  loop: "{{ wait_target_nodes }}"

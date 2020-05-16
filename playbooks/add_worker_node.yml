@@ -36,6 +36,8 @@
 - hosts: master[0]
   gather_facts: false
   become: false
+  vars:
+    wait_target_nodes: "{{groups.worker}}"
   roles:
     - configure_nodes/wait_node_ready
     - configure_nodes/delete_token
