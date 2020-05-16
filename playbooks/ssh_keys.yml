@@ -8,12 +8,9 @@
   - configure_ssh/add_authorized_key
 
 - hosts: master[0]
-  tasks:
-  - name: fetch master0 pubkey
-    fetch:
-      src: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
-      dest: /var/tmp/pubkey
-      flat: yes
+  roles:
+  - configure_ssh/get_node_pubkey
+
 - hosts: all, !master[0]
   tasks:
   - name: master0 pubkey copy to all-nodes
