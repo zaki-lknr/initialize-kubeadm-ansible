@@ -36,21 +36,24 @@
 - hosts: master[0]
   gather_facts: false
   become: false
-  tasks:
-    - name: wait for Node-Ready
-      vars:
-        host_address: "{{hostvars[item].ansible_host}}"
-      shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].status.conditions[-1].status}'
-      # nodeのstatusは、"Ready"と記録されている.typeではない
-      register: node_state
-      until: node_state.stdout == "True"
-      retries: 60
-      delay: 10
-      #changed_when: false
-      loop: "{{groups.worker}}"
+  roles:
+    - configure_nodes/wait_node_ready
+    - configure_nodes/delete_token
+  # tasks:
+  #   - name: wait for Node-Ready
+  #     vars:
+  #       host_address: "{{hostvars[item].ansible_host}}"
+  #     shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].status.conditions[-1].status}'
+  #     # nodeのstatusは、"Ready"と記録されている.typeではない
+  #     register: node_state
+  #     until: node_state.stdout == "True"
+  #     retries: 60
+  #     delay: 10
+  #     #changed_when: false
+  #     loop: "{{groups.worker}}"
 
-    # - name: delete token
-    #   shell: kubeadm token delete "{{kube_token.stdout}}"
-    - name: delete token
-      import_role:
-        name: configure_nodes/delete_token
+  #   # - name: delete token
+  #   #   shell: kubeadm token delete "{{kube_token.stdout}}"
+  #   - name: delete token
+  #     import_role:
+  #       name: configure_nodes/delete_token
