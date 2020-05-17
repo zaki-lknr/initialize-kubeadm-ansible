@@ -2,28 +2,10 @@
 - hosts: all
   gather_facts: false
   become: true
-  tasks:
-    - name: swap_off
-      import_role:
-        name: swap_off
-
-    - name: configure firewalld
-      import_role:
-        name: configure_firewalld
-
-    - name: Letting iptables see bridged traffic
-      import_role:
-        name: set_bridged_traffic
-
-    - name: install additional packages
-      import_role:
-        name: install_additional_packages
-      # todo: 処理位置は別途考える
-
-    - name: install container runtime
-      import_role:
-        name: install_container_runtime
-
-    - name: install kube tools
-      import_role:
-        name: install_kube_tools
+  roles:
+    - swap_off
+    - configure_firewalld
+    - set_bridged_traffic
+    - install_additional_packages
+    - install_container_runtime
+    - install_kube_tools

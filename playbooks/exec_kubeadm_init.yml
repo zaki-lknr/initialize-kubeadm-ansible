@@ -2,8 +2,5 @@
 - hosts: master[0]
   gather_facts: true
   become: true
-  tasks:
-  - name: execute kubeadm init
-    import_role:
-      name: configure_nodes/init_master
-
+  roles:
+    - configure_nodes/init_master
