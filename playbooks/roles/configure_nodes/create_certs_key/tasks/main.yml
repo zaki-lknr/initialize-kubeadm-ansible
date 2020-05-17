@@ -1,0 +1,7 @@
+---
+# masterノードの追加に必要なキー作成
+- name: create certs key
+  shell: kubeadm init phase upload-certs --upload-certs
+  register: cert_key
+# TODO: cert-keyに紐づいてるtokenの削除は、idが分からないので削除していない
+#       決め方がわかったら消したい

@@ -1,0 +1,5 @@
+---
+master_node: "{{hostvars[groups.master[0]].ansible_host}}"
+token: "{{hostvars[groups.master[0]].kube_token.stdout}}"
+ca_cert: "{{hostvars[groups.master[0]].token_ca_cert.stdout}}"
+cert_key: "{{hostvars[groups.master[0]].cert_key.stdout_lines[-1]}}"

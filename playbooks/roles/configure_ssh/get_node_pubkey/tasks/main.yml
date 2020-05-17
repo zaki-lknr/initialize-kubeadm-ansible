@@ -1,0 +1,8 @@
+---
+- name: fetch master0 pubkey
+  fetch:
+    src: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
+    dest: /var/tmp/pubkey
+    flat: yes
+# todo: 処理対象ノードが1つの場合固定の処理になっている
+#       (コピー先が/var/tmp/pubkey固定のため複数ノードで実行すると上書きされる)

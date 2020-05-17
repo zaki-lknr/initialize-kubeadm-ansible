@@ -2,48 +2,20 @@
 - hosts: master[0]
   gather_facts: false
   become: true
-  tasks:
-
-    - name: create token
-      shell: kubeadm token create
-      register: kube_token
-
-    - name: get ca cert
-      shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
-      check_mode: false
-      changed_when: false
-      register: token_ca_cert
+  roles:
+    - configure_nodes/create_token
 
 - hosts: worker
   gather_facts: false
   become: true
-  vars:
-    master_node: "{{hostvars[groups.master[0]].ansible_host}}"
-    token: "{{hostvars[groups.master[0]].kube_token.stdout}}"
-    ca_cert: "{{hostvars[groups.master[0]].token_ca_cert.stdout}}"
-  tasks:
-    - name: add worker nodes to cluster
-      shell: "kubeadm join {{master_node}}:6443 --token {{token}} --discovery-token-ca-cert-hash sha256:{{ca_cert}}"
-
-    # - name: test
-    #   debug:
-    #     msg: "{{token}} {{ca_cert}}"
+  roles:
+    - configure_nodes/add_worker
 
 - hosts: master[0]
   gather_facts: false
   become: false
-  tasks:
-    - name: wait for Node-Ready
-      vars:
-        host_address: "{{hostvars[item].ansible_host}}"
-      shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].status.conditions[-1].status}'
-      # nodeのstatusは、"Ready"と記録されている.typeではない
-      register: node_state
-      until: node_state.stdout == "True"
-      retries: 60
-      delay: 10
-      #changed_when: false
-      loop: "{{groups.worker}}"
-
-    - name: delete token
-      shell: kubeadm token delete "{{kube_token.stdout}}"
+  vars:
+    wait_target_nodes: "{{groups.worker}}"
+  roles:
+    - configure_nodes/wait_node_ready
+    - configure_nodes/delete_token

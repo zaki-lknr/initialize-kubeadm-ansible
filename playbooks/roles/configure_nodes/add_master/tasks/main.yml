@@ -1,0 +1,3 @@
+---
+- name: add master nodes to cluster
+  shell: "kubeadm join {{master_node}}:6443 --token {{token}} --discovery-token-ca-cert-hash sha256:{{ca_cert}} --control-plane --certificate-key {{cert_key}}"

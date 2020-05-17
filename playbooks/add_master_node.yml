@@ -2,54 +2,21 @@
 - hosts: master[0]
   gather_facts: false
   become: true
-  tasks:
-    - name: create certs key
-      shell: kubeadm init phase upload-certs --upload-certs
-      register: cert_key
-
-    - name: create token
-      shell: kubeadm token create
-      register: kube_token
-
-    - name: get ca cert
-      shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
-      check_mode: false
-      changed_when: false
-      register: token_ca_cert
-
-    # - name: print
-    #   debug:
-    #     msg: "{{cert_key.stdout_lines[-1]}}  /  {{kube_token.stdout}} / {{token_ca_cert.stdout}}"
+  roles:
+    - configure_nodes/create_certs_key
+    - configure_nodes/create_token
 
 - hosts: master, !master[0]
   gather_facts: false
   become: true
-  vars:
-    master_node: "{{hostvars[groups.master[0]].ansible_host}}"
-    token: "{{hostvars[groups.master[0]].kube_token.stdout}}"
-    ca_cert: "{{hostvars[groups.master[0]].token_ca_cert.stdout}}"
-    cert_key: "{{hostvars[groups.master[0]].cert_key.stdout_lines[-1]}}"
-  tasks:
-    - name: add master nodes to cluster
-      shell: "kubeadm join {{master_node}}:6443 --token {{token}} --discovery-token-ca-cert-hash sha256:{{ca_cert}} --control-plane --certificate-key {{cert_key}}"
+  roles:
+    - configure_nodes/add_master
 
 - hosts: master[0]
   gather_facts: false
   become: false
-  tasks:
-    - name: wait for Node-Ready
-      vars:
-        host_address: "{{hostvars[item].ansible_host}}"
-      shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].status.conditions[-1].status}'
-      # nodeのstatusは、"Ready"と記録されている.typeではない
-      register: node_state
-      until: node_state.stdout == "True"
-      retries: 60
-      delay: 10
-      #changed_when: false
-      loop: "{{groups.master | difference(groups.master[0])}}"
-
-    - name: delete token
-      shell: "kubeadm token delete {{kube_token.stdout}}"
-      # TODO: cert-keyに紐づいてるtokenの削除は、idが分からないので削除していない
-      #       決め方がわかったら消したい
+  vars:
+    wait_target_nodes: "{{groups.master | difference(groups.master[0])}}"
+  roles:
+    - configure_nodes/wait_node_ready
+    - configure_nodes/delete_token

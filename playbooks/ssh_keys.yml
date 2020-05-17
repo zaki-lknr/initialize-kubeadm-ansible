@@ -1,32 +1,17 @@
 ---
 - hosts: localhost, master[0]
-  tasks:
-  - name: create directory for ssh keypair
-    file:
-      path: "{{ lookup('env','HOME') }}/.ssh/"
-      state: directory
-      mode: 0700
-  - name: create ssh privatekey
-    openssh_keypair:
-      path: "{{ lookup('env','HOME') }}/.ssh/id_rsa"
-
-- hosts: all
-  tasks:
-  - name: publickey copy to target-nodes
-    authorized_key:
-      user: "{{ ansible_env.USER }}"
-      key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub' )}}"
+  roles:
+  - configure_ssh/create_key_pair
 
 - hosts: master[0]
-  tasks:
-  - name: fetch master0 pubkey
-    fetch:
-      src: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
-      dest: /var/tmp/pubkey
-      flat: yes
-- hosts: all, !master[0]
-  tasks:
-  - name: master0 pubkey copy to all-nodes
-    authorized_key:
-      user: "{{ ansible_env.USER }}"
-      key: "{{ lookup('file', '/var/tmp/pubkey' )}}"
+  roles:
+  - configure_ssh/get_node_pubkey
+    # 鍵ファイルのコピー先はハードコーディングしてある
+
+- hosts: all #, !master[0]
+  vars:
+    public_keys:
+    - "{{ lookup('env', 'HOME') + '/.ssh/id_rsa.pub' }}"
+    - "/var/tmp/pubkey"
+  roles:
+  - configure_ssh/add_authorized_key

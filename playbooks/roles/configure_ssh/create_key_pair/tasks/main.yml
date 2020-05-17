@@ -1,0 +1,10 @@
+---
+- name: create directory for ssh keypair
+  file:
+    path: "{{ lookup('env','HOME') }}/.ssh/"
+    state: directory
+    mode: 0700
+
+- name: create ssh privatekey
+  openssh_keypair:
+    path: "{{ lookup('env','HOME') }}/.ssh/id_rsa"

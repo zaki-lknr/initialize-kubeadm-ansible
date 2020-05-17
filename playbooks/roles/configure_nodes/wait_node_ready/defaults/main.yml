@@ -1,0 +1,4 @@
+---
+# roleの呼び出し側でreadyになるまでwaitするノードのリストを定義しておくこと
+wait_target_nodes:
+- "{{groups.master[0]}}"
