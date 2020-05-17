@@ -16,9 +16,8 @@
         name: set_bridged_traffic
 
     - name: install additional packages
-      yum:
-        name: "{{ additional_packages }}"
-        state: latest
+      import_role:
+        name: install_additional_packages
       # todo: 処理位置は別途考える
 
     - name: install container runtime

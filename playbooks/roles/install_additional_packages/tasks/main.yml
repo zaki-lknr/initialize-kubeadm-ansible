@@ -1,0 +1,7 @@
+---
+- name: install additional packages
+  yum:
+    name: "{{ additional_packages }}"
+    state: latest
+
+# todo:serviceの起動もあれば…
