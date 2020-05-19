@@ -1,0 +1,26 @@
+---
+- name: started firewalld
+  systemd:
+    state: started
+    daemon_reload: yes
+    enabled: yes
+    name: firewalld
+
+- name: allow required ports
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{ required_ports + (cni_required_ports | default([]))}}"
+  when: enable_firewalld is defined and enable_firewalld|bool
+
+- name: tunl0@NONE set to trusted zone
+  firewalld:
+    zone: trusted
+    interface: tunl0@NONE
+    permanent: yes
+    immediate: yes
+    state: enabled
+  when: enable_firewalld is defined and enable_firewalld|bool
+

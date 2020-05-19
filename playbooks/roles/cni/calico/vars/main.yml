@@ -1,0 +1,4 @@
+---
+cni_required_ports:
+- 5473/tcp
+- 2379/tcp
