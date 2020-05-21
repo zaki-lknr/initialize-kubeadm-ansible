@@ -11,3 +11,8 @@
 
 - name: ensure sysctl configure
   shell: sysctl --system
+
+- name: load br_netfilter module
+  modprobe:
+    name: br_netfilter
+    state: present
