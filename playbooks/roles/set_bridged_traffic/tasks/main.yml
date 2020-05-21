@@ -4,6 +4,14 @@
     name: br_netfilter
     state: present
 
+  # modprobe br_netfilter は、sysctlで設定変更する「前」に行う。
+  # とドキュメントに書いてあった
+  # > Make sure that the br_netfilter module is loaded before this step.
+  #
+  # この処理が無いと /proc/sys/net/bridge 以下が存在せず、
+  # ↓の処理が失敗するため。
+  # (sysctl --systemだと問題無かった)
+
 - name: confiture sysctl
   sysctl:
     name: "{{ item.key }}"
