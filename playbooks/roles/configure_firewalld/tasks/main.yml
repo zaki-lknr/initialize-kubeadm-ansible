@@ -5,18 +5,8 @@
     permanent: yes
     immediate: yes
     state: enabled
-  #loop: "{{ required_ports + (cni_required_ports | default([]))}}"
   loop: "{{ required_ports }}"
   when: enable_firewalld is defined and enable_firewalld|bool
-
-# - name: cni0 set to trusted zone
-#   firewalld:
-#     zone: trusted
-#     interface: cni0
-#     permanent: yes
-#     immediate: yes
-#     state: enabled
-#   when: enable_firewalld is defined and enable_firewalld|bool
 
 - name: disable firewalld
   systemd:
