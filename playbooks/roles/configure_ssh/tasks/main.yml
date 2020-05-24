@@ -1,4 +1,5 @@
 ---
+# sshキーペア作成 (localhost, master0)
 - name: create directory for ssh keypair
   file:
     path: "{{ lookup('env','HOME') }}/.ssh/"
@@ -19,6 +20,7 @@
   - "{{ groups.master[0] }}"
   - localhost
 
+# masterの公開鍵配布用にlocalhostへ一時転送
 - name: fetch master0 pubkey
   fetch:
     src: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
@@ -31,6 +33,7 @@
   loop:
   - "{{ groups.master[0] }}"
 
+# 公開鍵配布
 - name: publickey copy to target-nodes
   authorized_key:
     user: "{{ ansible_env.USER }}"
