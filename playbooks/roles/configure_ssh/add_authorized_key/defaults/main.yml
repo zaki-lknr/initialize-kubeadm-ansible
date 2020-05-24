@@ -1,3 +1,0 @@
----
-public_keys: 
-- "{{ lookup('env', 'HOME') + '/.ssh/id_rsa.pub' }}"
