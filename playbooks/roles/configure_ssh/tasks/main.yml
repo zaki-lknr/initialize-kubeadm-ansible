@@ -1,0 +1,43 @@
+---
+# sshキーペア作成 (localhost, master0)
+- name: create directory for ssh keypair
+  file:
+    path: "{{ lookup('env','HOME') }}/.ssh/"
+    state: directory
+    mode: 0700
+  delegate_to: "{{ item }}"
+  run_once: true
+  loop:
+  - "{{ groups.master[0] }}"
+  - localhost
+
+- name: create ssh privatekey
+  openssh_keypair:
+    path: "{{ lookup('env','HOME') }}/.ssh/id_rsa"
+  delegate_to: "{{ item }}"
+  run_once: true
+  loop:
+  - "{{ groups.master[0] }}"
+  - localhost
+
+# masterの公開鍵配布用にlocalhostへ一時転送
+- name: fetch master0 pubkey
+  fetch:
+    src: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
+    dest: /var/tmp/pubkey
+    flat: yes
+    # todo: 処理対象ノードが1つの場合固定の処理になっている
+    #       (コピー先が/var/tmp/pubkey固定のため複数ノードで実行すると上書きされる)
+  delegate_to: "{{ item }}"
+  run_once: true
+  loop:
+  - "{{ groups.master[0] }}"
+
+# 公開鍵配布
+- name: publickey copy to target-nodes
+  authorized_key:
+    user: "{{ ansible_env.USER }}"
+    key: "{{ lookup('file', item )}}"
+  loop:
+  - "{{ lookup('env', 'HOME') + '/.ssh/id_rsa.pub' }}"
+  - "/var/tmp/pubkey"
