@@ -1,6 +1,0 @@
----
-- name: publickey copy to target-nodes
-  authorized_key:
-    user: "{{ ansible_env.USER }}"
-    key: "{{ lookup('file', item )}}"
-  loop: "{{ public_keys }}"
