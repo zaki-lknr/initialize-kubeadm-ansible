@@ -19,14 +19,23 @@
     state: directory
     mode: 0775
 
-- name: overlay2 configure to docker
+- name: setup docker daemon (overlay2, cgroup driver, log driver, ...)
   copy:
     content: |
       {
-        "storage-driver": "overlay2"
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "100m"
+        },
+        "storage-driver": "overlay2",
+        "storage-opts": [
+          "overlay2.override_kernel_check=true"
+        ]
       }
     dest: /etc/docker/daemon.json 
     mode: 0644
+
 - name: start and enable docker
   systemd:
     state: restarted
