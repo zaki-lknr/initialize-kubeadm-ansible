@@ -1,12 +1,18 @@
 ---
+# - hosts: all
+#   gather_facts: false
+#   become: true
+#   roles:
+#   - cni/firewall
+
 - hosts: all
   gather_facts: false
   become: true
   roles:
-  - cni/firewall
+  - cni/calico
 
 - hosts: master[0]
   gather_facts: false
   roles:
-  - cni/flannel
+  # - cni/flannel
   - cni/wait

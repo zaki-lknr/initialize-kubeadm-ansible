@@ -24,3 +24,12 @@
     state: enabled
   when: enable_firewalld is defined and enable_firewalld|bool
 
+# todo: firewalld設定、これだと足りていない(ノード跨いだpod間通信が出来ていない)
+
+- name: deploy Calico
+  become: false
+  shell: kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+  delegate_to: "{{ item }}"
+  run_once: true
+  loop:
+  - "{{ groups.master[0] }}"
