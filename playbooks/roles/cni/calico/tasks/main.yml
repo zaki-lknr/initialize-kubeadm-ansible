@@ -17,8 +17,6 @@
     state: enabled
   when: enable_firewalld is defined and enable_firewalld|bool
 
-# todo: firewalld設定、これだと足りていない(ノード跨いだpod間通信が出来ていない)
-
 - name: started firewalld
   systemd:
     state: restarted
