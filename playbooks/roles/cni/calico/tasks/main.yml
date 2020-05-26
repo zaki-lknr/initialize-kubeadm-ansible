@@ -5,7 +5,7 @@
     permanent: yes
     immediate: yes
     state: enabled
-  loop: "{{ required_ports + (cni_required_ports | default([]))}}"
+  loop: "{{ cni_required_ports }}"
   when: enable_firewalld is defined and enable_firewalld|bool
 
 - name: tunl0@NONE set to trusted zone
