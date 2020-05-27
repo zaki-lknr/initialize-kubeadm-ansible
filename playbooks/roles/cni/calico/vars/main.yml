@@ -1,0 +1,5 @@
+---
+cni_required_ports:
+- 179/tcp  # Calico networking (BGP)
+- 4789/udp # Calico networking with VXLAN enabled
+- 5473/tcp # Calico networking with Typha enabled
