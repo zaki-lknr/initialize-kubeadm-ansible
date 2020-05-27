@@ -19,6 +19,11 @@
   when: enable_firewalld is defined and enable_firewalld|bool
 
 
-- name: install flannel
+- name: deploy flannel
+  become: false
   shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
   # todo: applyの処理がunchangedの場合も、ansibleではchanged扱いになっている
+  delegate_to: "{{ item }}"
+  run_once: true
+  loop:
+  - "{{ groups.master[0] }}"
