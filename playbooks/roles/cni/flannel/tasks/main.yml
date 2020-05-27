@@ -1,4 +1,24 @@
 ---
+# flannel用firewalld設定
+- name: allow required ports for flannel
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop: "{{ cni_required_ports }}"
+  when: enable_firewalld is defined and enable_firewalld|bool
+
+- name: cni0 set to trusted zone for flannel
+  firewalld:
+    zone: trusted
+    interface: cni0
+    permanent: yes
+    immediate: yes
+    state: enabled
+  when: enable_firewalld is defined and enable_firewalld|bool
+
+
 - name: install flannel
   shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
   # todo: applyの処理がunchangedの場合も、ansibleではchanged扱いになっている
