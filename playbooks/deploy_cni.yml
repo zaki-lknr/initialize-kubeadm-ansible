@@ -1,9 +1,10 @@
 ---
-# - hosts: all
-#   gather_facts: false
-#   become: true
-#   roles:
-#   - cni/firewall
+- hosts: all
+  gather_facts: false
+  become: true
+  roles:
+  - role: cni/flannel
+    when: use_cni_plugin == 'flannel'
 
 - hosts: all
   gather_facts: false
@@ -15,5 +16,4 @@
 - hosts: master[0]
   gather_facts: false
   roles:
-  # - cni/flannel
   - cni/wait
