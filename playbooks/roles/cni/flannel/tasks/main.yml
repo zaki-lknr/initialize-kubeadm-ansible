@@ -27,3 +27,8 @@
   run_once: true
   loop:
   - "{{ groups.master[0] }}"
+
+
+- name: wait node-ready
+  import_role:
+    name: cni/wait

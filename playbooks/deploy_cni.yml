@@ -13,7 +13,7 @@
   - role: cni/calico
     when: use_cni_plugin == 'calico'
 
-- hosts: master[0]
-  gather_facts: false
-  roles:
-  - cni/wait
+# - hosts: master[0]
+#   gather_facts: false
+#   roles:
+#   - cni/wait
