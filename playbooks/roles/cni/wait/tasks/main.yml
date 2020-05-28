@@ -7,7 +7,7 @@
   delay: 5
   changed_when: false
   # 待つだけなので強制no changed
-  gather_facts: false
+  become: false
   delegate_to: "{{ item }}"
   run_once: true
   loop:
