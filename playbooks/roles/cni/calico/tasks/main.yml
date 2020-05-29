@@ -27,5 +27,5 @@
 
 - name: wait node-ready
   import_role:
-    name: cni/wait
-    # name: configure_nodes/wait_node_ready 
+    # name: cni/wait
+    name: configure_nodes/wait_node_ready 

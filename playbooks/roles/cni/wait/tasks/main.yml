@@ -1,18 +1,18 @@
 ---
-- name: wait for Node-Ready
-  vars:
-    host_address: "{{hostvars[item].ansible_host}}"
-  shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].status.conditions[-1].status}'
-  # nodeのstatusは、"Ready"と記録されている.typeではない
-  register: node_state
-  until: node_state.stdout == "True"
-  retries: 60
-  delay: 5
-  changed_when: false
-  # 待つだけなので強制no changed
-  loop:
-  - "{{ groups.master[0] }}" # とりあえずmaster[0]をハードコーディング
+# - name: wait for Node-Ready
+#   vars:
+#     host_address: "{{hostvars[item].ansible_host}}"
+#   shell: kubectl get node -o jsonpath='{.items[?(@.status.addresses[0].address == "{{host_address}}")].status.conditions[-1].status}'
+#   # nodeのstatusは、"Ready"と記録されている.typeではない
+#   register: node_state
+#   until: node_state.stdout == "True"
+#   retries: 60
+#   delay: 5
+#   changed_when: false
+#   # 待つだけなので強制no changed
+#   loop:
+#   - "{{ groups.master[0] }}" # とりあえずmaster[0]をハードコーディング
 
-  become: false
-  delegate_to: "{{ groups.master[0] }}"
-  run_once: true
+#   become: false
+#   delegate_to: "{{ groups.master[0] }}"
+#   run_once: true
