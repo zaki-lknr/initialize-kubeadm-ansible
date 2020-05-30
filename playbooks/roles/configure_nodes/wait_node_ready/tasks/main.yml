@@ -9,4 +9,8 @@
   retries: 60
   delay: 10
   #changed_when: false
-  loop: "{{ wait_target_nodes }}"
+  loop: "{{ wait_target_nodes }}"       # チェック対象はカスタマイズ可能
+
+  become: false
+  delegate_to: "{{ groups.master[0] }}" # kubectl get node で状態チェックを行うノードはmaster[0]限定
+  run_once: true
