@@ -1,0 +1,7 @@
+---
+- name: configure non-password sudo
+  copy:
+    dest: /etc/sudoers.d/nopass
+    mode: 0600
+    content: |
+      %wheel ALL=(ALL) NOPASSWD: ALL
