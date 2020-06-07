@@ -1,5 +1,6 @@
 ---
 - name: configure non-password sudo
+  become: true
   copy:
     dest: /etc/sudoers.d/nopass
     mode: 0600
