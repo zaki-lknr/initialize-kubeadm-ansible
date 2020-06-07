@@ -15,7 +15,7 @@ playbookは以下の通り
 | playbook                            | 機能                                      |
 | ----------------------------------- | --------------------------------------- |
 | playbooks/playbook.yaml             | 以下全て実行                                  |
-| playbooks/ssh_keys.yaml             | ssh鍵作成・公開鍵配布                            |
+| playbooks/auth_settings.yaml        | sudoers/ssh鍵設定                            |
 | playbooks/preparing_hosts.yaml      | ホストの事前設定・kubeadm/kubectl/kubeletのインストール |
 | playbooks/exec_kubeadm_init.yaml    | `kubeadm init`をmasterノード上で実行            |
 | playbooks/deploy_cni.yaml           | CNIのインストール(現在はFlannel限定)                |
