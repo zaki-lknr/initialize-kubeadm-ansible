@@ -20,10 +20,5 @@
   yum:
     name: "{{ k8s_required_packages }}"
     state: latest
-
-- name: start and enable kubelet
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-    name: kubelet
+  notify:
+  - require_restart_kubelet
