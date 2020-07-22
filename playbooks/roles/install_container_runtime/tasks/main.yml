@@ -12,6 +12,8 @@
   yum:
     name: "{{ cri_required_packages }}"
     state: latest
+  notify:
+  - require_restart_docker
 
 - name: create docker configure directory
   file:
@@ -35,10 +37,5 @@
       }
     dest: /etc/docker/daemon.json 
     mode: 0644
-
-- name: start and enable docker
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-    name: docker
+  notify:
+  - require_restart_docker
