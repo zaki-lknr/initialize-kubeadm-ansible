@@ -7,14 +7,7 @@
     state: enabled
   loop: "{{ cni_required_ports }}"
   when: enable_firewalld is defined and enable_firewalld|bool
-
-- name: started firewalld
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-    name: firewalld
-
+  notify: require_restart_firewalld
 
 - name: deploy Calico
   become: false

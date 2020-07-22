@@ -1,0 +1,8 @@
+---
+- name: started firewalld
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+    name: firewalld
+  listen: require_restart_firewalld
