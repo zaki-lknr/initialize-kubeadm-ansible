@@ -1,4 +1,9 @@
 ---
+- name: create kubeadm-configure YAML file
+  template:
+    src: kubeadm-config.yaml.j2
+    dest: "{{ lookup('env','HOME') }}/kubeadm-config.yaml"
+
 - name: execute kubeadm init
   shell: kubeadm init --pod-network-cidr="{{pod_network_cidr}}" --control-plane-endpoint="{{controlplain_endpoint}}" --upload-certs
 
