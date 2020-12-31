@@ -1,7 +1,13 @@
 ---
 - name: install additional packages
   yum:
-    name: "{{ additional_packages }}"
+    name: "{{ additional_packages | default([]) }}"
     state: latest
 
-# todo:serviceの起動もあれば…
+- name: enable additional services
+  systemd:
+    state: started
+    enabled: yes
+    name: "{{ item }}"
+  with_items:
+  - "{{ additional_services | default([]) }}"
