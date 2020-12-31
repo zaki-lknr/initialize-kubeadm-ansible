@@ -3,3 +3,7 @@
 additional_packages:
   - bash-completion
   - open-vm-tools
+
+# 開始・有効化するサービス
+additional_services:
+  - vmtoolsd
