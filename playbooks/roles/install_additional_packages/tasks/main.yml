@@ -1,7 +1,7 @@
 ---
 - name: install additional packages
   yum:
-    name: "{{ additional_packages }}"
+    name: "{{ additional_packages | default([]) }}"
     state: latest
 
 - name: enable additional services
@@ -10,4 +10,4 @@
     enabled: yes
     name: "{{ item }}"
   with_items:
-  - "{{ additional_services }}"
+  - "{{ additional_services | default([]) }}"
