@@ -18,7 +18,7 @@
 
 - name: install kubelet/kubeadm/kubectl
   yum:
-    name: "{{ k8s_required_packages }}"
+    name: "{{ k8s_required_packages | product([kube_version | default('*')]) | map('join', '-') | list }}"
     state: latest
   notify:
   - require_restart_kubelet

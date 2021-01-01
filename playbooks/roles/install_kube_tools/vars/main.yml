@@ -1,6 +1,6 @@
 ---
 # kubernetes関連パッケージ
 k8s_required_packages:
-  - kubelet-1.19.*
-  - kubeadm-1.19.*
-  - kubectl-1.19.*
+  - kubelet
+  - kubeadm
+  - kubectl
