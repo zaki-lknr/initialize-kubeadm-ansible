@@ -7,5 +7,5 @@
     - configure_firewalld
     - set_bridged_traffic
     - install_additional_packages
-    - install_container_runtime/docker
+    - install_container_runtime/containerd
     - install_kube_tools
