@@ -5,3 +5,7 @@
   #   tasks_from: docker
   import_tasks: docker.yml
   when: use_cri == 'docker'
+
+- name: import containerd role
+  import_tasks: containerd.yml
+  when: use_cri == 'containerd'

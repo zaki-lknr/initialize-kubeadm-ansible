@@ -32,7 +32,13 @@
     sysctl_set: false
     reload: true
     sysctl_file: /etc/sysctl.d/99-kubernetes-cri.conf
-  loop: "{{ require_kernel_param }}"
+  loop:
+    - key: net.bridge.bridge-nf-call-iptables
+      value: 1
+    - key: net.bridge.bridge-nf-call-ip6tables
+      value: 1
+    - key: net.ipv4.ip_forward
+      value: 1
 
 - name: setup docker yum repository
   get_url:
