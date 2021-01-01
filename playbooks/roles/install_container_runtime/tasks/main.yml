@@ -4,4 +4,4 @@
   #   name: install_container_runtime
   #   tasks_from: docker
   import_tasks: docker.yml
-
+  when: use_cri == 'docker'
