@@ -53,6 +53,8 @@
     - device-mapper-persistent-data
     - lvm2
     - containerd.io
+  notify:
+  - require_restart_containerd
 
 - name: create containerd configure directory
   file:
@@ -62,10 +64,5 @@
 
 - name: configured containerd
   shell: containerd config default > /etc/containerd/config.toml
-
-- name: start and enable containerd
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-    name: containerd
+  notify:
+  - require_restart_containerd
