@@ -1,0 +1,41 @@
+---
+- name: setup docker yum repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: '0644'
+  # 手順としては yum-config-manager --add-repo を実行することになっている。
+  # コマンドの処理内容はwgetなのでget_urlで代替
+  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#tab-cri-docker-installation-1
+
+- name: install docker
+  yum:
+    name: "{{ cri_required_packages }}"
+    state: latest
+  notify:
+  - require_restart_docker
+
+- name: create docker configure directory
+  file:
+    path: /etc/docker/
+    state: directory
+    mode: 0775
+
+- name: setup docker daemon (overlay2, cgroup driver, log driver, ...)
+  copy:
+    content: |
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "100m"
+        },
+        "storage-driver": "overlay2",
+        "storage-opts": [
+          "overlay2.override_kernel_check=true"
+        ]
+      }
+    dest: /etc/docker/daemon.json 
+    mode: 0644
+  notify:
+  - require_restart_docker

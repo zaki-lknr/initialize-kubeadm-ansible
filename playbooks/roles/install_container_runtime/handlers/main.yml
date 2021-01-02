@@ -6,3 +6,10 @@
     enabled: yes
     name: docker
   listen: require_restart_docker
+
+- name: start and enable containerd
+  systemd:
+    state: restarted
+    enabled: yes
+    name: containerd
+  listen: require_restart_containerd
