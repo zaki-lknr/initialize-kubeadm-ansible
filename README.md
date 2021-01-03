@@ -16,7 +16,7 @@ playbookは以下の通り
 | ----------------------------------- | --------------------------------------- |
 | playbooks/playbook.yaml             | 以下全て実行                                  |
 | playbooks/auth_settings.yaml        | sudoers/ssh鍵設定                            |
-| playbooks/preparing_hosts.yaml      | ホストの事前設定・kubeadm/kubectl/kubeletのインストール |
+| playbooks/preparing_hosts.yaml      | ホストの事前設定・CRI、kubeadm/kubectl/kubeletのインストール |
 | playbooks/exec_kubeadm_init.yaml    | `kubeadm init`をmasterノード上で実行            |
 | playbooks/deploy_cni.yaml           | CNIのインストール(現在はCalico or Flannel指定可)                |
 | playbooks/add_master_node.yaml      | masterノードの追加(`kubeadm join`)            |
