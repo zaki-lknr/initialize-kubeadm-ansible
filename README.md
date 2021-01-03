@@ -29,3 +29,20 @@ $ ansible-playbook -i inventory.ini playbooks/playbook.yaml -kK
 ```
 
 パスワード無しで`sudo`する設定や、ssh鍵設定前の場合は、`-K`および`-k`を付与して実行する。
+
+# inventory
+
+## node
+
+`[master]`または`[worker]`ホストグループにそれぞれ定義する。  
+現状`ansible_host`によるIPアドレスの指定必須。
+
+## 変数
+
+| 変数名                     | 意味                                          |
+| ----------------------- | ------------------------------------------- |
+| `cluster_name`          | クラスター名 (`kubectl config get-clusters`などの表示) |
+| `controlplain_endpoint` | HA構成の場合にコントロールプレーン用のLBのエンドポイント              |
+| `use_cri`               | 使用CRI (`docker`または`containerd`を指定)          |
+| `use_cni_plugin`        | 使用CNI (`calico`または`flannel`を指定)             |
+| `kube_version`          | Kubernetesバージョンを指定(1.19最新であれば`1.19.*`まで指定)  |
