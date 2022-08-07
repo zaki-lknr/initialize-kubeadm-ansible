@@ -11,7 +11,7 @@
 
 - name: deploy Calico
   become: false
-  shell: kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+  shell: kubectl apply -f https://docs.projectcalico.org/latest/manifests/calico.yaml
   delegate_to: "{{ item }}"
   run_once: true
   loop:
