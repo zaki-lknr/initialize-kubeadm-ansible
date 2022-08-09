@@ -9,14 +9,36 @@
   when: enable_firewalld is defined and enable_firewalld|bool
   notify: require_restart_firewalld
 
-- name: deploy Calico
+- name: deploy Tigera Calico operator and CRD
   become: false
-  shell: kubectl apply -f https://docs.projectcalico.org/latest/manifests/calico.yaml
+  shell: kubectl apply -f https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml
   delegate_to: "{{ item }}"
   run_once: true
   loop:
   - "{{ groups.master[0] }}"
 
+- name: get custome resource
+  become: false
+  ansible.builtin.get_url:
+    url: https://projectcalico.docs.tigera.io/manifests/custom-resources.yaml
+    dest: ~/calico-custom-resources.yaml
+  delegate_to: "{{ groups.master[0] }}"
+  run_once: true
+
+- name: modify custome resource
+  become: false
+  ansible.builtin.replace:
+    path: ~/calico-custom-resources.yaml
+    regexp: ^(\s+cidr:).*
+    replace: \1 {{ pod_network_cidr }}
+  delegate_to: "{{ groups.master[0] }}"
+  run_once: true
+
+- name: deploy Tigera Calico operator and CRD
+  become: false
+  shell: kubectl apply -f ~/calico-custom-resources.yaml
+  delegate_to: "{{ groups.master[0] }}"
+  run_once: true
 
 - name: wait node-ready
   import_role:
