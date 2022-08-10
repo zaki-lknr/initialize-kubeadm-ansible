@@ -2,7 +2,7 @@
 
 CentOS7で`kubeadm init`を実行するために必要なmaster/workerノードの準備と構築を行うplaybook
 
-- firewalld: 有効
+- ~~firewalld: 有効~~ (現verのCalicoは[firewalldを無効にするよう明記](https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements#node-requirements)してある)
 - CNIはCalicoまたはFlannel使用前提(firewalld設定は自動)
 - firewalldを無効化する場合はinventoryに設定
 
