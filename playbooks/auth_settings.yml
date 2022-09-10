@@ -1,7 +1,0 @@
----
-- hosts: all
-  become: false
-  gather_facts: true
-  roles:
-  - configure_sudo
-  - configure_ssh
