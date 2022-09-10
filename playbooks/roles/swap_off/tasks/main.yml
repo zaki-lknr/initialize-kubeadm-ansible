@@ -10,7 +10,7 @@
   when: swap_state.stdout != ''
 
 - name: swap check (/etc/fstab)
-  shell: grep -v "\s*#" /etc/fstab | awk '{print $2}' | grep swap -c
+  shell: grep -v "\s*#" /etc/fstab | awk '{print $3}' | grep swap -c
   register: swap_state_in_fstab
   check_mode: false
   changed_when: false
