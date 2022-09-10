@@ -14,3 +14,7 @@
     enabled: no
     name: firewalld
   when: not (enable_firewalld is defined and enable_firewalld|bool)
+  register: disable_firewalld
+  vars:
+    ignore_msg: "Could not find the requested service firewalld: host"
+  failed_when: disable_firewalld.msg != "{{ ignore_msg }}"
