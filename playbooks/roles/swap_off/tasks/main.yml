@@ -19,6 +19,6 @@
 - name: disable swap (/etc/fstab)
   replace:
     path: /etc/fstab
-    regexp: ([^\s]+\s+swap\s+.*)
+    regexp: (.+\s+swap\s+.*)
     replace: '# \1'
   when: swap_state_in_fstab.stdout != '0'
