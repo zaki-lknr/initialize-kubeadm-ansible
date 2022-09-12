@@ -6,6 +6,5 @@
     - swap_off
     - configure_firewalld
     - set_bridged_traffic
-    - install_additional_packages
     - install_container_runtime
     - install_kube_tools
