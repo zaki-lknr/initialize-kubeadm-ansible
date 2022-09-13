@@ -35,36 +35,39 @@
   ansible.builtin.gather_facts:
     gather_subset:
       - min
-- debug:
-    msg:
-      - "{{ ansible_facts.pkg_mgr }}"
-      - "{{ ansible_facts.os_family }}"
-      - "{{ ansible_facts.distribution }}"
-- meta: end_play
+# - debug:
+#     msg:
+#       - "{{ ansible_facts.pkg_mgr }}"
+#       - "{{ ansible_facts.os_family }}"
+#       - "{{ ansible_facts.distribution }}"
+# - meta: end_play
 
-- name: setup docker yum repository
-  get_url:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
-    dest: /etc/yum.repos.d/docker-ce.repo
-    mode: '0644'
+- when: ansible_facts.distribution == 'CentOS'
+  # documentではRHEL 7.4+も対応
+  block:
+  - name: setup docker yum repository
+    get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
+      mode: '0644'
 
-- name: install containerd
-  yum:
-    name:
-    - yum-utils
-    - device-mapper-persistent-data
-    - lvm2
-    - containerd.io
-  notify:
-  - require_restart_containerd
+  - name: install containerd
+    yum:
+      name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - containerd.io
+    notify:
+    - require_restart_containerd
 
-- name: create containerd configure directory
-  file:
-    path: /etc/containerd
-    state: directory
-    mode: 0775
+  - name: create containerd configure directory
+    file:
+      path: /etc/containerd
+      state: directory
+      mode: 0775
 
-- name: configured containerd
-  shell: containerd config default > /etc/containerd/config.toml
-  notify:
-  - require_restart_containerd
+  - name: configured containerd
+    shell: containerd config default > /etc/containerd/config.toml
+    notify:
+    - require_restart_containerd
