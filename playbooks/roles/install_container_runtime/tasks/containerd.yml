@@ -31,6 +31,17 @@
     - key: net.ipv4.ip_forward
       value: 1
 
+- name: gather os facts
+  ansible.builtin.gather_facts:
+    gather_subset:
+      - min
+- debug:
+    msg:
+      - "{{ ansible_facts.pkg_mgr }}"
+      - "{{ ansible_facts.os_family }}"
+      - "{{ ansible_facts.distribution }}"
+- meta: end_play
+
 - name: setup docker yum repository
   get_url:
     url: https://download.docker.com/linux/centos/docker-ce.repo
