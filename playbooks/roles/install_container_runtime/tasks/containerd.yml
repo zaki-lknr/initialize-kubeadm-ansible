@@ -40,6 +40,7 @@
 #       - "{{ ansible_facts.pkg_mgr }}"
 #       - "{{ ansible_facts.os_family }}"
 #       - "{{ ansible_facts.distribution }}"
+#       - "{{ ansible_facts.distribution_release }}"
 # - meta: end_play
 
 - when: ansible_facts.distribution == 'CentOS'
@@ -61,13 +62,43 @@
     notify:
     - require_restart_containerd
 
-  - name: create containerd configure directory
-    file:
-      path: /etc/containerd
-      state: directory
-      mode: 0775
+- when: ansible_facts.distribution == 'Ubuntu'
+  block:
+  - name: add docker's official GPG key
+    ansible.builtin.apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      keyring: /usr/share/keyrings/docker-archive-keyring.gpg
 
-  - name: configured containerd
-    shell: containerd config default > /etc/containerd/config.toml
-    notify:
-    - require_restart_containerd
+  - name: get machine architecture
+    ansible.builtin.command: dpkg --print-architecture
+    register: arch_result
+    changed_when: false
+
+  - name: add apt repository
+    vars:
+      arch: "{{ arch_result.stdout }}"
+      dist: "{{ ansible_facts.distribution_release }}"
+    ansible.builtin.apt_repository:
+      repo: "deb [arch={{ arch }} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ dist }} stable"
+      filename: docker
+
+  - name: install containerd
+    ansible.builtin.apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - containerd.io
+      update_cache: true
+
+- name: create containerd configure directory
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: 0775
+
+- name: configured containerd
+  shell: containerd config default > /etc/containerd/config.toml
+  notify:
+  - require_restart_containerd
