@@ -99,6 +99,8 @@
     mode: 0775
 
 - name: configured containerd
-  shell: containerd config default > /etc/containerd/config.toml
+  shell: containerd config default | sed -e 's/SystemdCgroup = .*/SystemdCgroup = true/' > /etc/containerd/config.toml
   notify:
   - require_restart_containerd
+  # SystemdCgroupを有効にする
+  # <https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd>
