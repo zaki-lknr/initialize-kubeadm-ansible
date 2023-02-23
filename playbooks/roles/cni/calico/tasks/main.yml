@@ -11,7 +11,7 @@
 
 - name: deploy Tigera Calico operator and CRD
   become: false
-  shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.0/manifests/tigera-operator.yaml
+  shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/tigera-operator.yaml
   delegate_to: "{{ item }}"
   run_once: true
   loop:
@@ -20,7 +20,7 @@
 - name: get custome resource
   become: false
   ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/projectcalico/calico/v3.24.0/manifests/custom-resources.yaml
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml
     dest: ~/calico-custom-resources.yaml
   delegate_to: "{{ groups.master[0] }}"
   run_once: true
