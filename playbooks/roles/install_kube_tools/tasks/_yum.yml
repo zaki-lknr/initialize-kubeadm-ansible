@@ -1,0 +1,30 @@
+---
+# kubeadm
+- name: kubeadm, kubelet, kubectl
+  yum_repository:
+    name: kubernetes
+    file: kubernetes
+    description: Kubernetes
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    exclude:
+      - kubelet
+      - kubeadm
+      - kubectl
+    repo_gpgcheck: false
+
+- name: SELinux set permissive
+  selinux:
+    policy: targeted
+    state: permissive
+
+- name: install kubelet/kubeadm/kubectl
+  yum:
+    name: "{{ k8s_required_packages | product([kube_version | default('*')]) | map('join', '-') | list }}"
+    state: latest
+    disable_excludes: kubernetes
+  notify:
+  - require_restart_kubelet

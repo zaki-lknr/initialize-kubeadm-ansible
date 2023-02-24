@@ -1,7 +1,4 @@
 ---
-- name: ssh pub/priv key configure
-  import_playbook: auth_settings.yml
-
 - name: preparing_hosts
   import_playbook: preparing_hosts.yml
 

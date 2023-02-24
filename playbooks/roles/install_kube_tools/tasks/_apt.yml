@@ -1,0 +1,22 @@
+---
+- name: add kubernetes's GPG key
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: add k8s apt repository
+  ansible.builtin.apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    filename: kubernetes
+
+- name: install prerequisites packages
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - curl
+    update_cache: true
+
+- name: install kubetools packages
+  ansible.builtin.apt:
+    name: "{{ k8s_required_packages | product([kube_version | default('*')]) | map('join', '=') | list }}"
+    update_cache: true
+    allow_change_held_packages: true

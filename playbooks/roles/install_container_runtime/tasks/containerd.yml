@@ -31,21 +31,66 @@
     - key: net.ipv4.ip_forward
       value: 1
 
-- name: setup docker yum repository
-  get_url:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
-    dest: /etc/yum.repos.d/docker-ce.repo
-    mode: '0644'
+- name: gather os facts
+  ansible.builtin.gather_facts:
+    gather_subset:
+      - min
+# - debug:
+#     msg:
+#       - "{{ ansible_facts.pkg_mgr }}"
+#       - "{{ ansible_facts.os_family }}"
+#       - "{{ ansible_facts.distribution }}"
+#       - "{{ ansible_facts.distribution_release }}"
+# - meta: end_play
 
-- name: install containerd
-  yum:
-    name:
-    - yum-utils
-    - device-mapper-persistent-data
-    - lvm2
-    - containerd.io
-  notify:
-  - require_restart_containerd
+- when: ansible_facts.distribution == 'CentOS'
+  # documentではRHEL 7.4+も対応
+  block:
+  - name: setup docker yum repository
+    get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
+      mode: '0644'
+
+  - name: install containerd
+    yum:
+      name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - containerd.io
+    notify:
+    - require_restart_containerd
+
+- when: ansible_facts.distribution == 'Ubuntu'
+  block:
+  - name: add docker's official GPG key
+    ansible.builtin.apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      keyring: /usr/share/keyrings/docker-archive-keyring.gpg
+
+  - name: get machine architecture
+    ansible.builtin.command: dpkg --print-architecture
+    register: arch_result
+    changed_when: false
+
+  - name: add apt repository
+    vars:
+      arch: "{{ arch_result.stdout }}"
+      dist: "{{ ansible_facts.distribution_release }}"
+    ansible.builtin.apt_repository:
+      repo: "deb [arch={{ arch }} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ dist }} stable"
+      filename: docker
+
+  - name: install containerd
+    ansible.builtin.apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - containerd.io
+      update_cache: true
 
 - name: create containerd configure directory
   file:
@@ -54,6 +99,8 @@
     mode: 0775
 
 - name: configured containerd
-  shell: containerd config default > /etc/containerd/config.toml
+  shell: containerd config default | sed -e 's/SystemdCgroup = .*/SystemdCgroup = true/' > /etc/containerd/config.toml
   notify:
   - require_restart_containerd
+  # SystemdCgroupを有効にする
+  # <https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd>
